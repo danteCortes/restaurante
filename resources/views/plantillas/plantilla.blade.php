@@ -71,7 +71,7 @@
           <a href="{{url('/')}}" class="navbar-brand">
             <small>
               <i class="fa fa-leaf"></i>
-              Chiken Mafer
+              Chicken´s Mafer
             </small>
           </a>
         </div>

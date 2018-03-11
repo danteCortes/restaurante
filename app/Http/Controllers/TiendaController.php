@@ -80,6 +80,10 @@ class TiendaController extends Controller{
       ' FUE ELIMINADA SIN PROBLEMAS.');
   }
 
+  public function todos(){
+    return Tienda::get();
+  }
+
 
 
 

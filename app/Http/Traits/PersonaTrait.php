@@ -13,7 +13,19 @@ class PersonaTrait{
     $persona->apellidos = mb_strtoupper($datos['apellidos']);
     $persona->direccion = mb_strtoupper($datos['direccion']);
     $persona->telefono = mb_strtoupper($datos['telefono']);
-    $persona->email = mb_strtoupper($datos['email']);
+    $persona->email = $datos['email'];
+    $persona->save();
+
+    return Persona::find($datos['dni']);
+  }
+  
+  static function modificar(Persona $persona, array $datos){
+    $persona->dni = $datos['dni'];
+    $persona->nombres = mb_strtoupper($datos['nombres']);
+    $persona->apellidos = mb_strtoupper($datos['apellidos']);
+    $persona->direccion = mb_strtoupper($datos['direccion']);
+    $persona->telefono = mb_strtoupper($datos['telefono']);
+    $persona->email = $datos['email'];
     $persona->save();
 
     return Persona::find($datos['dni']);

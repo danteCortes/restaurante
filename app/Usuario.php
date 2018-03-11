@@ -15,6 +15,10 @@ class Usuario extends Authenticatable
     return $this->belongsTo('\App\Persona', 'persona_dni', 'dni');
   }
 
+  public function tienda(){
+    return $this->belongsTo('\App\Tienda', 'local_id');
+  }
+
 
 
 
