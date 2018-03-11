@@ -25,4 +25,20 @@ Route::prefix('administrador')->group(function(){
     Route::put('/{id}', 'TiendaController@modificar')->where('id', '[0-9]+');
     Route::delete('/{id}', 'TiendaController@eliminar')->where('id', '[0-9]+');
   });
+  Route::prefix('categoria')->group(function(){
+    Route::get('/', 'CategoriaController@inicio');
+    Route::get('/todos', 'CategoriaController@todos');
+    Route::get('/{id}', 'CategoriaController@buscar')->where('id', '[0-9]+');
+    Route::post('/', 'CategoriaController@guardar')->name('categoria');
+    Route::put('/{id}', 'CategoriaController@modificar')->where('id', '[0-9]+');
+    Route::delete('/{id}', 'CategoriaController@eliminar')->where('id', '[0-9]+');
+  });
+  Route::prefix('producto')->group(function(){
+    Route::get('/', 'ProductoController@inicio');
+    Route::get('/todos', 'ProductoController@todos');
+    Route::get('/{id}', 'ProductoController@buscar')->where('id', '[0-9]+');
+    Route::post('/', 'ProductoController@guardar')->name('producto');
+    Route::put('/{id}', 'ProductoController@modificar')->where('id', '[0-9]+');
+    Route::delete('/{id}', 'ProductoController@eliminar')->where('id', '[0-9]+');
+  });
 });
