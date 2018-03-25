@@ -32,12 +32,16 @@ class LoginController extends Controller{
     if (Auth::attempt(['persona_dni' => $request->dni, 'password' => $request->password])) {
       return redirect('tipo-usuario');
     }
-    return redirect('/');
+    return redirect('/')->with('error', 'CREDENCIALES INCORRECTAS.');
   }
 
   public function tipoUsuario(){
     if(Auth::user()->tipo_usuario == 0){
       return redirect('administrador');
+    }elseif(Auth::user()->tipo_usuario == 1){
+      return redirect('cajero');
+    }elseif(Auth::user()->tipo_usuario == 2){
+      return redirect('mozo');
     }
   }
 

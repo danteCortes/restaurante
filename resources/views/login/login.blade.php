@@ -114,11 +114,31 @@
 
   <body>
     <div class="container" style="text-align:center;">
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          @if(Session::has('correcto'))
+            <div class="alert alert-success alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <strong>Correcto!</strong> {{Session::get('correcto')}}
+            </div>
+          @elseif(Session::has('info'))
+            <div class="alert alert-info alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <strong>Correcto!</strong> {{Session::get('info')}}
+            </div>
+          @elseif(Session::has('error'))
+            <div class="alert alert-danger alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <strong>Error!</strong> {{Session::get('error')}}
+            </div>
+          @endif
+        </div>
+      </div>
       {{Form::open(['url'=>'login', 'class'=>'form-signin', 'id'=>'frmLogin'])}}
 				{{Form::token()}}
 				<div style="text-align:center;">
 					<img src="{{url('img/logo.jpg')}}" alt="" style="width:150px; margin-left:auto; margin-right:auto; display:block; " class="img-responsive img-rounded">
-				</div><br>
+        </div><br>
         {{Form::label(null, 'DNI: ', ['class'=>'sr-only'])}}
         {{Form::text('dni', null, ['class'=>'form-control dni', 'placeholder'=>'DNI', 'required'=>'', 'autofocus'=>'',
           'autocomplete'=>'off'])}}

@@ -75,6 +75,7 @@
             </small>
           </a>
         </div>
+            @if(Auth::check())
 
         <div class="navbar-buttons navbar-header pull-right" role="navigation">
           <ul class="nav ace-nav">
@@ -332,7 +333,6 @@
                 </li>
               </ul>
             </li>
-
             <li class="light-blue dropdown-modal">
               <a data-toggle="dropdown" href="#" class="dropdown-toggle">
                 <img class="nav-user-photo" src="{{url('assets/images/avatars/user.jpg')}}" alt="Jason's Photo" />
@@ -379,6 +379,7 @@
             </li>
           </ul>
         </div>
+            @endif
       </div><!-- /.navbar-container -->
     </div>
 

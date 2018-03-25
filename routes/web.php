@@ -42,3 +42,15 @@ Route::prefix('administrador')->group(function(){
     Route::delete('/{id}', 'ProductoController@eliminar')->where('id', '[0-9]+');
   });
 });
+
+Route::prefix('mozo')->group(function(){
+  Route::get('/', 'MozoController@inicio');
+  Route::prefix('pedido')->group(function(){
+    Route::get('/', 'PedidoController@inicio');
+    Route::get('/{id}', 'PedidoController@buscar')->where('id', '[0-9]+');
+    Route::get('/nuevo', 'PedidoController@nuevo');
+    Route::get('/validar', 'PedidoController@validar');
+    Route::get('/buscar-pedidos/{dni}', 'PedidoController@buscarPedidos')->where('id', '[0-9]+');
+    Route::post('/', 'PedidoController@guardar')->name('pedido');
+  });
+});
