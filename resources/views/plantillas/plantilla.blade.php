@@ -479,6 +479,7 @@
         $(".ruc").mask("99999999999");
         $(".dni").mask("99999999");
         $(".moneda").mask("###0.00", {reverse: true});
+        $(".numero").mask("#", {reverse: true});
         $.ajaxSetup({
           headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

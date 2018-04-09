@@ -19,6 +19,10 @@
             <th>CATEGORIA</th>
             <td class="categoria"></td>
           </tr>
+          <tr>
+            <th>PRECIO</th>
+            <td class="precio"></td>
+          </tr>
         </table>
       </div>
       <div class="modal-footer">

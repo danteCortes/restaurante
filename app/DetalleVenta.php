@@ -13,6 +13,14 @@ class DetalleVenta extends Model{
   public function localProducto(){
     return $this->belongsTo('App\LocalProducto', 'local_producto_id');
   }
+
+  public function getPrecioUnitarioAttribute($value){
+    return number_format($value, 2, '.', '');
+  }
+
+  public function getPrecioVentaAttribute($value){
+    return number_format($value, 2, '.', '');
+  }
   
 
 

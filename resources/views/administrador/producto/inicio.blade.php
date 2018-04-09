@@ -52,6 +52,7 @@
           function(producto, estado, xhr){
             $("td.id").html(producto["id"]);
             $("td.nombre").html(producto["nombre"]);
+            $("td.precio").html(parseFloat(producto["precio"]).toFixed(2));
             if (producto['categoria']) {
               $("td.categoria").html(producto["categoria"]['nombre']);
             }

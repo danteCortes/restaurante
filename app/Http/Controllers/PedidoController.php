@@ -12,6 +12,7 @@ use App\Http\Traits\VentaTrait;
 use App\Http\Traits\DetalleVentaTrait;
 use App\Http\Traits\LocalProductoTrait;
 use Carbon\Carbon;
+use Auth;
 
 class PedidoController extends Controller{
 
@@ -23,56 +24,41 @@ class PedidoController extends Controller{
     return view('mozo.pedido.nuevo.inicio');
   }
 
-  public function validar(Request $request){
-    $estado = 1;
-    $mensaje = "";
-    if (empty($request->dni)) {
-      $estado = 0;
-      $mensaje = "EL DNI DEL MOZO ES UN CAMPO OBLIGATORIO";
+  private function validarDatos(Request $request){
+    $this->validate($request, [
+      'dni'       =>  'required|digits:8|exists:usuarios,persona_dni',
+      'password'  =>  'required',
+      'mesa'      =>  'nullable|numeric|min:1|required_without:llevar',
+      'cliente'   =>  'nullable|required_with:llevar'
+    ]);
+    $estado = 200;
+    $respuesta = [];
+    $usuario = Usuario::where('persona_dni', $request->dni)->first();
+    if (!Hash::check($request->password, $usuario->password)) {
+      $estado = 422;
+      $mensaje = "EL PASSWORD ES INCORRECTO, PRUEBE NUEVAMENTE";
+      $respuesta = ['errors'=>['password'=>$mensaje], 'message'=>'The given data was invalid.'];
       goto terminar;
     }
-    if (empty($request->password)) {
-      $estado = 0;
-      $mensaje = "EL PASSWORD ES UN CAMPO OBLIGATORIO";
+    if(empty($usuario->local_id)){
+      $estado = 422;
+      $mensaje = "ESTE USUARIO NO ESTÁ REGISTRADO A UNA TIENDA, COMUNIQUE AL ADMINISTRADOR";
+      $respuesta = ['errors'=>['dni'=>$mensaje], 'message'=>'The given data was invalid.'];
       goto terminar;
-    }
-    if (empty($request->mesa)) {
-      $estado = 0;
-      $mensaje = "EL NÚMERO DE MESA ES UN CAMPO OBLIGATORIO";
-      goto terminar;
-    }
-    if(!$usuario = Usuario::where('persona_dni', $request->dni)->first()){
-      $estado = 0;
-      $mensaje = "NO EXISTE UN USUARIO CON ESE NÚMERO DE DNI.";
-    }else{
-      if (!Hash::check($request->password, $usuario->password)) {
-        $estado = 0;
-        $mensaje = "EL PASSWORD ES INCORRECTO, PRUEBE NUEVAMENTE";
-        goto terminar;
-      }
-      if(empty($usuario->local_id)){
-        $estado = 0;
-        $mensaje = "ESTE USUARIO NO ESTÁ REGISTRADO A UNA TIENDA, COMUNIQUE AL ADMINISTRADOR";
-        goto terminar;
-      }
     }
     terminar:
-    return ['estado'=>$estado, 'mensaje'=>$mensaje];
+    return response($respuesta, $estado);
+  }
+
+  public function validar(Request $request){
+    return $this->validarDatos($request);
   }
 
   public function guardar(Request $request){
 
-    Validator::make($request->all(), [
-      'mozo'=>'required|exists:usuarios,persona_dni',
-      'mesa'=>'required|integer'
-    ])->validate();
-    $usuario = Usuario::where('persona_dni', $request->mozo)->first();
-    if(!Hash::check($request->password, $usuario->password)){
-      return redirect('mozo/pedido/nuevo')->with('error', 'EL PASSWORD DEL MOZO ES INCORRECTO');
-    }
-    if(empty($usuario->local_id)){
-      return redirect('mozo/pedido/nuevo')->with('error', 'EL USUARIO NO ESTÁ REGISTRADO EN UNA TIENDA.');
-    }
+    $this->validarDatos($request);
+
+    $usuario = Usuario::where('persona_dni', $request->dni)->first();
     $datosVenta = ['usuario_id'=>$usuario->id, 'local_id'=>$usuario->tienda->id, 'mesa'=>$request->mesa,
       'cliente'=>$request->cliente, 'llevar'=>$request->llevar];
     $venta = VentaTrait::guardar($datosVenta);
@@ -92,14 +78,20 @@ class PedidoController extends Controller{
 
   public function buscarPedidos($dni){
     $usuario = Usuario::where('persona_dni', $dni)->first();
-    return Venta::with('detallesVenta')->where('usuario_id', $usuario->id)
+    return Venta::with('detallesVenta.localProducto.producto')->where('usuario_id', $usuario->id)
       ->whereDate('fecha', Carbon::now()->format('Y-m-d'))->get();
   }
 
   public function buscar($id){
-    return Venta::with('detallesVenta.localProducto.producto')->where('id', $id)->first();
+    return Venta::with('detallesVenta.localProducto.producto')->with('tienda')->with('usuario.persona')
+      ->where('id', $id)->first();
   }
   
+  public function todos(){
+    $pedidos = Venta::whereDate('fecha', Carbon::now()->format('Y-m-d'))->where('local_id', Auth::user()->local_id)
+    ->where('estado', '!=', 2)->with('usuario.persona')->with('tienda')->get();
+    return $pedidos;
+  }
 
 
 

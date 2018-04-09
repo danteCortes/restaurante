@@ -10,6 +10,10 @@ class Tienda extends Model{
 
   public $timestamps = false;
 
+  public function ventas(){
+    return $this->hasMany('App\Venta', 'local_id');
+  }
+
 
 
 }

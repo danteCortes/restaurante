@@ -9,7 +9,8 @@
         <p class="mensaje"></p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-ban"></span> Cancelar</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+          <span class="fa fa-ban"></span> Cerrar</button>
       </div>
     </div>
   </div>

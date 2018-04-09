@@ -8,7 +8,7 @@
 @include('plantillas.validaciones')
 @include('plantillas.mensajes')
 <div class="row">
-  {{Form::open(['route'=>'pedido', 'id'=>'frmNuevaVenta', 'autocomplete'=>'off'])}}
+  {{Form::open(['route'=>'pedido', 'id'=>'frmNuevaVenta'])}}
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-7">
       <div class="row">
         <div class="col-xs-12">
@@ -74,7 +74,7 @@
             <div class="form-group">
               {{Form::label(null, 'MOZO*:', ['class'=>'control-label col-xs-4'])}}
               <div class="col-xs-8">
-                {{Form::text('dni', null, ['class'=>'form-control input-sm dni', 'placeholder'=>'DNI'])}}
+                {{Form::text('mozo', null, ['class'=>'form-control input-sm dni', 'placeholder'=>'MOZO'])}}
               </div>
             </div>
             <div class="form-group">
@@ -84,10 +84,9 @@
               </div>
             </div>
             <div class="form-group">
-              {{Form::label(null, 'MESA:', ['class'=>'control-label col-xs-4'])}}
+              {{Form::label(null, 'MESA*:', ['class'=>'control-label col-xs-4'])}}
               <div class="col-xs-8">
-                {{Form::number('mesa', null, ['class'=>'form-control input-sm numero', 'placeholder'=>'MESA',
-                  'min'=>'1'])}}
+                {{Form::text('mesa', null, ['class'=>'form-control input-sm mayuscula', 'placeholder'=>'MESA'])}}
               </div>
             </div>
             <div class="form-group">
@@ -127,12 +126,8 @@
 @stop
 
 @section('scripts')
-  {{Html::script('assets/js/vue.js')}}
-  {{Html::script('assets/js/axios.js')}}
   {{Html::script('componentes/bootstrap-select/bootstrap-select.min.js')}}
   <script>
-
-
     function eliminarFila(){
       $(".eliminar").click(function(){
         $(this).closest("tr[id]").remove();
@@ -161,17 +156,11 @@
       });
     }
     function validarVenta(datos, callback){
-      axios.post("{{url('mozo/pedido/validar')}}", datos).then(response => {
-        callback(response);
-      }).catch(errores => {
-        if (errores.response) {
-          $("#error").find("p.mensaje").empty();
-          $.each(errores.response.data.errors, function (clave, valor) {
-            $("#error").find("p.mensaje").append(valor + "<br>");
-          });
-          $("#error").modal("show");
+      $.get("{{url('mozo/pedido/validar')}}", datos,
+        function (respuesta, textStatus, jqXHR) {
+          callback(respuesta);
         }
-      });
+      );
     }
     $(document).ready(function(){
       $("#btnAgregarProducto").click(function(){
@@ -202,20 +191,19 @@
       });
 
       $("#btnNuevaVenta").click(function(){
-        llevar = null;
-        if ($("input[name='llevar']").prop('checked')) {
-          llevar = $("input[name='llevar']").val();
-        }
         if (calcularTotal() > 0) {
           datos = {
-            dni: $("input[name='dni']").val(),
+            dni: $("input[name='mozo']").val(),
             password: $("input[name='password']").val(),
-            mesa: parseInt($("input[name='mesa']").val()),
-            llevar: llevar,
-            cliente: $("input[name='cliente']").val()
+            mesa: $("input[name='mesa']").val()
           };
           validarVenta(datos, function(respuesta){
-            $("#frmNuevaVenta").submit();
+            if(respuesta['estado'] == 1){
+              $("#frmNuevaVenta").submit();
+            }else{
+              $("#error").find("p.mensaje").text(respuesta['mensaje']);
+              $("#error").modal("show");
+            }
           });
         }else{
           $("#error").find("p.mensaje").text("NO INGRESÓ UN SOLO PRODUCTO A LA VENTA. VUELVA A INTENTARLO.");
