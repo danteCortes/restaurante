@@ -23,9 +23,9 @@
               <td>{{$categoria->id}}</td>
               <td>{{$categoria->nombre}}</td>
               <td>
-                <a class="editar" data-toogle="tooltip" title="Editar" data-id="{{$categoria->id}}">
+                <a class="btn btn-warning btn-white btn-minier editar" data-toogle="tooltip" title="Editar" data-id="{{$categoria->id}}">
                   <span class="fa fa-edit"> </span> </a>
-                <a class="eliminar" data-toogle="tooltip" title="Eliminar" data-id="{{$categoria->id}}">
+                <a class="btn btn-danger btn-white btn-minier eliminar" data-toogle="tooltip" title="Eliminar" data-id="{{$categoria->id}}">
                   <span class="fa fa-trash"> </span> </a>
               </td>
             </tr>
@@ -48,6 +48,7 @@
           "{{url('administrador/categoria')}}/"+$(this).data('id'),
           function(categoria, estado, xhr){
             $("input.nombre").val(categoria["nombre"]);
+            $("#editar").modal("show");
           }
         );
       });

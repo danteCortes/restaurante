@@ -39,11 +39,11 @@
                 @endif
               </td>
               <td>
-                <a class="ver" data-toogle="tooltip" title="Ver" data-id="{{$usuario->id}}">
+                <a class="btn btn-info btn-white btn-minier ver" data-toogle="tooltip" title="Ver" data-id="{{$usuario->id}}">
                   <span class="fa fa-eye"> </span> </a>
-                <a class="editar" data-toogle="tooltip" title="Editar" data-id="{{$usuario->id}}">
+                <a class="btn btn-warning btn-white btn-minier editar" data-toogle="tooltip" title="Editar" data-id="{{$usuario->id}}">
                   <span class="fa fa-edit"> </span> </a>
-                <a class="eliminar" data-toogle="tooltip" title="Eliminar" data-id="{{$usuario->id}}">
+                <a class="btn btn-danger btn-white btn-minier eliminar" data-toogle="tooltip" title="Eliminar" data-id="{{$usuario->id}}">
                   <span class="fa fa-trash"> </span> </a>
               </td>
             </tr>

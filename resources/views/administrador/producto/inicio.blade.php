@@ -23,11 +23,11 @@
               <td>{{$producto->id}}</td>
               <td>{{$producto->nombre}}</td>
               <td>
-                <a class="ver" data-toogle="tooltip" title="Ver" data-id="{{$producto->id}}">
+                <a class="btn btn-info btn-white btn-minier ver" data-toogle="tooltip" title="Ver" data-id="{{$producto->id}}">
                   <span class="fa fa-eye"> </span> </a>
-                <a class="editar" data-toogle="tooltip" title="Editar" data-id="{{$producto->id}}">
+                <a class="btn btn-warning btn-white btn-minier editar" data-toogle="tooltip" title="Editar" data-id="{{$producto->id}}">
                   <span class="fa fa-edit"> </span> </a>
-                <a class="eliminar" data-toogle="tooltip" title="Eliminar" data-id="{{$producto->id}}">
+                <a class="btn btn-danger btn-white btn-minier eliminar" data-toogle="tooltip" title="Eliminar" data-id="{{$producto->id}}">
                   <span class="fa fa-trash"> </span> </a>
               </td>
             </tr>
@@ -67,7 +67,7 @@
           "{{url('administrador/producto')}}/"+$(this).data('id'),
           function(producto, estado, xhr){
             $("input.nombre").val(producto["nombre"]);
-            $("input.precio").val(producto["precio"].toFixed(2));
+            $("input.precio").val(parseFloat(producto["precio"]).toFixed(2));
             $.get(
               "{{url('administrador/categoria/todos')}}",
               function(categorias, estado, xhr){

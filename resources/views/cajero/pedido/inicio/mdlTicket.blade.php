@@ -10,7 +10,7 @@
         Hola Mundo
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-info btn-xs pull-left" id="btnImprimirTicket">
+        <button type="button" class="btn btn-info btn-xs pull-left" id="btnImprimirTicket" data-id="">
           <span class="fa fa-print"></span> Imprimir</button>
         <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">
           <span class="fa fa-ban"></span> Cancelar</button>

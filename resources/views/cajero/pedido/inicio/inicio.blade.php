@@ -40,6 +40,8 @@
 
 @section('scripts')
   {{Html::script('componentes/printarea/jquery.printarea.js')}}
+  {{Html::script('assets/js/vue.js')}}
+  {{Html::script('assets/js/axios.js')}}
   <script>
 
     function pedidos(){
@@ -125,6 +127,7 @@
               <th class="text-right" style="border-top-width: 0px;">${parseFloat(pedido['total']).toFixed(2)}</th>
             </tr>
           </table>`);
+          $("#btnImprimirTicket").attr('data-id', pedido['id']);
           $("#ticket").modal("show");
         }
       );
@@ -135,6 +138,14 @@
 
       $("#btnImprimirTicket").click(function(){
         $("#papel-ticket").printArea();
+        $.post("cajero/pedido/cobrar", {
+            id: $(this).data("id")
+          },
+          function (data, textStatus, jqXHR) {
+            $("#pedidos").empty();
+            pedidos();
+          }
+        );
         console.log("borrar pedido");
       })
     });

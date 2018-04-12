@@ -49,8 +49,9 @@ Route::prefix('mozo')->group(function(){
     Route::get('/', 'PedidoController@inicio');
     Route::get('/{id}', 'PedidoController@buscar')->where('id', '[0-9]+');
     Route::get('/nuevo', 'PedidoController@nuevo');
-    Route::post('/validar', 'PedidoController@validar');
     Route::get('/buscar-pedidos/{dni}', 'PedidoController@buscarPedidos')->where('id', '[0-9]+');
+    Route::post('/validar', 'PedidoController@validar');
+    Route::post('/servir', 'PedidoController@servir');
     Route::post('/', 'PedidoController@guardar')->name('pedido');
   });
 });
@@ -59,4 +60,5 @@ Route::prefix('cajero')->group(function(){
   Route::get('/', 'CajeroController@inicio');
   Route::get('/pedido/{id}', 'PedidoController@buscar')->where('id', '[0-9]+');
   Route::get('pedidos', 'PedidoController@todos');
+  Route::post('pedido/cobrar', 'PedidoController@cobrar');
 });

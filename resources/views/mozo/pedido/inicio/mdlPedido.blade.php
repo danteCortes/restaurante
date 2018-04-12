@@ -35,7 +35,7 @@
       </div>
       <div class="modal-footer">
         {{Form::button('<span class="fa fa-cutlery"> </span> Servido', ['class'=>'btn btn-warning btn-sm pull-left',
-          'type'=>'button', 'id'=>'btnServirPedido'])}}
+          'type'=>'button', 'id'=>'btnServirPedido', '@click'=>'servirPedido', 'v-if'=>'!pedido.estado'])}}
         <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><span class="fa fa-ban">
           </span> Cancelar</button>
       </div>

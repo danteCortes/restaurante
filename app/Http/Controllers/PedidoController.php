@@ -93,6 +93,18 @@ class PedidoController extends Controller{
     return $pedidos;
   }
 
+  public function servir(Request $request){
+    $pedido = Venta::find($request->id);
+    $pedido->estado = 1;
+    $pedido->update();
+  }
+
+  public function cobrar(Request $request){
+    $pedido = Venta::find($request->id);
+    $pedido->estado = 2;
+    $pedido->update();
+  }
+
 
 
 

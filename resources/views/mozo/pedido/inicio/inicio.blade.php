@@ -99,10 +99,21 @@
         
       },
       methods: {
+        servirPedido: function(){
+          url = "pedido/servir";
+          axios.post(url, this.pedido).then(response => {
+            $("#pedido").modal("hide");
+            this.buscarPedidos();
+            toastr.success("UN PEDIDO FUE REGISTRADO COMO SERVIDO CORRECTAMENTE.");
+          }).catch(errores => {
+
+          });
+        },
         autenticarMozo: function(){
           url = "../mozo/pedido/validar";
           axios.post(url, this.datosMozo).then(response => {
             this.errores = [];
+            this.datosMozo.password = '';
             this.buscarPedidos(this.datosMozo.dni)
           }).catch(errores => {
             if (response = errores.response) {
