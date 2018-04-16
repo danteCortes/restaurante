@@ -185,8 +185,8 @@
                   <td style="width:90px;">
                     <input type="number" class="form-control input-sm" name="cantidades[`+producto['id']+`]" value="1">
                   </td>
-                  <td class="text-right" style="width:90px;">`+producto['precio'].toFixed(2)+`</td>
-                  <td class="text-right" style="width:90px;">`+producto['precio'].toFixed(2)+`</td>
+                  <td class="text-right" style="width:90px;">`+parseFloat(producto['precio']).toFixed(2)+`</td>
+                  <td class="text-right" style="width:90px;">`+parseFloat(producto['precio']).toFixed(2)+`</td>
                   <td class="text-center" style="width:90px;">
                     <a data-target="tooltip" title="Eliminar" class="eliminar"><span class="fa fa-trash"></span></a>
                   </td>

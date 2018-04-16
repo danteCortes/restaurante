@@ -1,38 +1,36 @@
-<div class="modal fade" id="editar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="mdlEditarProducto" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">Editar Producto</h4>
       </div>
-      {{Form::open(['id'=>'frmEditarProducto', 'class'=>'form-horizontal', 'method'=>'put'])}}
+      {{Form::open(['class'=>'form-horizontal', '@submit.prevent'=>'modificarProducto(productoCompleto.id)'])}}
         {{ csrf_field() }}
         <div class="modal-body">
           <div class="form-group">
             {{Form::label('nombre', 'NOMBRE*', ['class'=>'control-label col-sm-4'])}}
             <div class="col-sm-8">
-              {{Form::text('nombre', null, ['class'=>'form-control input-sm mayuscula nombre', 'placeholder'=>'NOMBRE',
-                'required'=>''])}}
-            </div>
-          </div>
-          <div class="form-group">
-            {{Form::label('precio', 'PRECIO*', ['class'=>'control-label col-sm-4'])}}
-            <div class="col-sm-8">
-              {{Form::text('precio', null, ['class'=>'form-control input-sm moneda precio', 'placeholder'=>'PRECIO',
-                'required'=>''])}}
+              {{Form::text('nombre', null, ['class'=>'form-control input-sm mayuscula', 'placeholder'=>'NOMBRE',
+                'required'=>'', 'v-model'=>'productoCompleto.nombre'])}}
+              <span class="text-danger" v-for="error in errores.nombre">@{{ error }}</span>
             </div>
           </div>
           <div class="form-group">
             {{Form::label('categoria_id', 'CATEGORIA', ['class'=>'control-label col-sm-4'])}}
             <div class="col-sm-8">
-              <select name="categoria_id" class="form-control input-sm categoria_id">
+              <select name="categoria_id" class="form-control input-sm" v-model="productoCompleto.categoria_id">
                 <option value>--CATEGORIA--</option>
+                <option v-for="categoria in categorias" :value="categoria.id">@{{ categoria.nombre }}</option>
               </select>
+              <span class="text-danger" v-for="error in errores.categoria_id">@{{ error }}</span>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-ban"></span> Cancelar</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-ban">
+            </span> Cancelar</button>
           <button type="submit" class="btn btn-primary"><span class="fa fa-save"></span> Modificar</button>
         </div>
       {{Form::close()}}

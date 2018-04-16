@@ -1,16 +1,16 @@
-<div class="modal fade" id="eliminar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="mdlEliminarProducto" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">Eliminar Producto</h4>
       </div>
-      {{Form::open(['id'=>'frmEliminarProducto', 'class'=>'form-horizontal', 'method'=>'delete'])}}
+      {{Form::open(['class'=>'form-horizontal', '@submit.prevent'=>'eliminarProducto(productoCompleto.id)'])}}
         {{ csrf_field() }}
         <div class="modal-body">
-          <p>ESTA A PUNTO DE ELIMINAR EL PRODUCTO <strong class="nombre"></strong>, TAMBIÉN SE VAN A ELIMINAR 
-            LAS VENTAS REALIZADAS CON ESTE PRODUCTO.</p>
-          <p>PARA CONTINUAR CON ESTA ACCIÓN DDE CLIC EN EL BOTÓN ELIMINAR, DE LO CONTRARIO PUEDE CANCELAR
+          <p>ESTA A PUNTO DE ELIMINAR EL PRODUCTO <producto :nombre="productoCompleto.nombre"></producto>, 
+            TAMBIÉN SE VAN A ELIMINAR LAS VENTAS REALIZADAS CON ESTE PRODUCTO.</p>
+          <p>PARA CONTINUAR CON ESTA ACCIÓN DE CLIC EN EL BOTÓN ELIMINAR, DE LO CONTRARIO PUEDE CANCELAR
             ESTA ACCIÓN.</p>
         </div>
         <div class="modal-footer">

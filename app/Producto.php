@@ -11,6 +11,15 @@ class Producto extends Model{
   public function categoria(){
     return $this->belongsTo('App\Categoria');
   }
+
+  public function localProducto(){
+    return $this->hasMany('App\LocalProducto');
+  }
+
+  public function locales(){
+    return $this->belongsToMany('App\Tienda', 'local_producto', 'producto_id', 'local_id')
+      ->withPivot('stock', 'precio');
+  }
   
   
 

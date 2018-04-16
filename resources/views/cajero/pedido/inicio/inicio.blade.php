@@ -144,6 +144,7 @@
           function (data, textStatus, jqXHR) {
             $("#pedidos").empty();
             pedidos();
+            $("#ticket").modal("hide");
           }
         );
         console.log("borrar pedido");

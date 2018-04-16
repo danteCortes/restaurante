@@ -1,4 +1,4 @@
-<div class="modal fade" id="ver" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="mdlVerProducto" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -6,22 +6,25 @@
         <h4 class="modal-title" id="myModalLabel">Datos del Producto</h4>
       </div>
       <div class="modal-body">
-        <table class="table" id="tblVerProducto">
+        <table class="table">
           <tr>
             <th>ID</th>
-            <td class="id"></td>
+            <td>@{{ productoCompleto.id }}</td>
           </tr>
           <tr>
             <th>NOMBRE</th>
-            <td class="nombre"></td>
+            <td>@{{ productoCompleto.nombre }}</td>
           </tr>
           <tr>
             <th>CATEGORIA</th>
-            <td class="categoria"></td>
+            <td>@{{ productoCompleto.categoria_nombre }}</td>
           </tr>
           <tr>
-            <th>PRECIO</th>
-            <td class="precio"></td>
+            <th>PRECIOS</th>
+            <td>
+              <p v-for="precio in productoCompleto.precios">
+                @{{ precio.nombre }}: S/ @{{ parseFloat(precio.pivot.precio).toFixed(2) }}</p>  
+            </td>
           </tr>
         </table>
       </div>

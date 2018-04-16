@@ -13,6 +13,10 @@ class LocalProducto extends Model{
   public function producto(){
     return $this->belongsTo('App\Producto');
   }
+
+  public function local(){
+    return $this->belongsTo('App\Tienda', 'local_id');
+  }
   
 
 

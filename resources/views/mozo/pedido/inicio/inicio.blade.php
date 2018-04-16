@@ -60,9 +60,6 @@
         </div>
       </div>
   </div>
-  <pre>
-    @{{ $data }}
-  </pre>
   @include('plantillas.mdlError')
   @include('mozo.pedido.inicio.mdlPedido')
 @endsection

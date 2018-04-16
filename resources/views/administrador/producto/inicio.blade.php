@@ -1,8 +1,12 @@
 @extends('administrador.inicio')
 
+@section('estilos')
+  {{Html::style('assets/css/toastr.css')}}
+@endsection
+
 @section('contenido')
   <div class="page-header">
-    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#nuevo">Nuevo</button>
+    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#mdlNuevoProducto">Nuevo</button>
     @include('administrador.producto.mdlNuevo')
   </div>
   @include('plantillas.mensajes')
@@ -12,26 +16,30 @@
       <table class="table table-condensed table-striped" id="tblCategorias">
         <thead>
           <tr class="info">
-            <th>#</th>
+            <th class="text-center">#</th>
             <th>NOMBRE</th>
-            <th>OPCIONES</th>
+            <th class="text-center">OPCIONES</th>
           </tr>
         </thead>
         <tbody>
-          @foreach(App\Producto::get() as $producto)
-            <tr>
-              <td>{{$producto->id}}</td>
-              <td>{{$producto->nombre}}</td>
-              <td>
-                <a class="btn btn-info btn-white btn-minier ver" data-toogle="tooltip" title="Ver" data-id="{{$producto->id}}">
-                  <span class="fa fa-eye"> </span> </a>
-                <a class="btn btn-warning btn-white btn-minier editar" data-toogle="tooltip" title="Editar" data-id="{{$producto->id}}">
-                  <span class="fa fa-edit"> </span> </a>
-                <a class="btn btn-danger btn-white btn-minier eliminar" data-toogle="tooltip" title="Eliminar" data-id="{{$producto->id}}">
-                  <span class="fa fa-trash"> </span> </a>
-              </td>
-            </tr>
-          @endforeach
+          <tr v-for="producto in productos">
+            <td class="text-center">@{{ producto.id }}</td>
+            <td>@{{ producto.nombre }}</td>
+            <td class="text-center">
+              <button class="btn btn-info btn-white btn-minier ver" data-toogle="tooltip" title="Ver"
+                @click="mostrarProducto(producto)">
+                <span class="fa fa-eye"> </span> </button>
+              <button class="btn btn-warning btn-white btn-minier editar" data-toogle="tooltip" title="Editar"
+                @click="editarProducto(producto)">
+                <span class="fa fa-edit"> </span> </button>
+              <button class="btn btn-danger btn-white btn-minier eliminar" data-toogle="tooltip" title="Eliminar"
+                @click="advertencia(producto)">
+                <span class="fa fa-trash"> </span> </button>
+              <button class="btn btn-inverse btn-white btn-minier precios" data-toogle="tooltip" title="Precios"
+                @click="agregarPrecios(producto)">
+                <span class="fa fa-dollar"> </span> </button>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -39,70 +47,172 @@
   @include('administrador.producto.mdlVer')
   @include('administrador.producto.mdlEditar')
   @include('administrador.producto.mdlEliminar')
+  @include('administrador.producto.mdlPrecios')
 @stop
 
 @section('scripts')
+  {{Html::script('assets/js/vue.js')}}
+  {{Html::script('assets/js/axios.js')}}
+  {{Html::script('assets/js/toastr.js')}}
+  {{Html::script('assets/js/v-mask.min.js')}}
   <script>
-    $(document).ready(function(){
 
-      $("a.ver").click(function(){
-        $("#tblVerProducto > tbody > tr > td").empty();
-        $.get(
-          "{{url('administrador/producto')}}/"+$(this).data('id'),
-          function(producto, estado, xhr){
-            $("td.id").html(producto["id"]);
-            $("td.nombre").html(producto["nombre"]);
-            $("td.precio").html(parseFloat(producto["precio"]).toFixed(2));
-            if (producto['categoria']) {
-              $("td.categoria").html(producto["categoria"]['nombre']);
+    Vue.component('producto', {
+      template: "<strong>@{{ nombre }}</strong>",
+      props: ['nombre']
+    });
+
+    new Vue({
+      el: "#main-container > div.main-content > div > div.page-content",
+      created: function(){
+        this.obtenerProductos();
+        this.obtenerCategorias();
+        this.obtenerTiendas();
+      },
+      data: {
+        productoNuevo: {
+          nombre: '',
+          categoria_id: ''
+        },
+        categorias: [],
+        productoCompleto : {
+          id: '',
+          nombre: '',
+          categoria_id: '',
+          categoria_nombre: '',
+          precios: []
+        },
+        productos: [],
+        errores: [],
+        tiendas: [],
+        nuevoPrecio: {
+          precio: '',
+          tienda: '',
+          producto: ''
+        }
+      },
+      methods: {
+        guardarPrecio: function(id){
+          $("#mdlPrecioProducto").modal("hide");
+          url = "producto/" + id + "/precio";
+          axios.post(url, this.nuevoPrecio).then(response => {
+            this.nuevoPrecio = {
+              precio: '',
+              tienda: '',
+              producto: ''
+            };
+            this.errores = [];
+            this.obtenerProductos();
+            toastr.success(response.data);
+          }).catch(errores => {
+            if(response = errores.response){
+              this.errores = response.data.errors;
+              $("#mdlPrecioProducto").modal("show");
             }
-            $("#ver").modal("show");
-          }
-        )
-      });
-
-      $("a.editar").click(function(){
-        $("form#frmEditarProducto").prop('action', "{{url('administrador/producto')}}/"+$(this).data('id'));
-        $.get(
-          "{{url('administrador/producto')}}/"+$(this).data('id'),
-          function(producto, estado, xhr){
-            $("input.nombre").val(producto["nombre"]);
-            $("input.precio").val(parseFloat(producto["precio"]).toFixed(2));
-            $.get(
-              "{{url('administrador/categoria/todos')}}",
-              function(categorias, estado, xhr){
-                if(producto['categoria']){
-                  opciones = `<option value='`+producto['categoria_id']+`'>`+producto['categoria']['nombre']+
-                  `</option>
-                  <option value>--CATEGORIA--</option>`;
-                }else{
-                  opciones = `<option value>--CATEGORIA--</option>`;
-                }
-                $.each(categorias, function(clave, valor){
-                  if (valor['id'] != producto['categoria_id']) {
-                    opciones += "<option value='"+valor['id']+"'>"+valor['nombre']+"</option>";
-                  }
-                });
-                $("select.categoria_id").html(opciones);
-                $("#editar").modal('show');
-              }
-            );
-          }
-        );
-      });
-
-      $("a.eliminar").click(function(){
-        $("form#frmEliminarProducto").prop('action', "{{url('administrador/producto')}}/"+$(this).data('id'))
-        $.get(
-          "{{url('administrador/producto')}}/"+$(this).data('id'),
-          function(producto, estado, xhr){
-            $("strong.nombre").html(producto["nombre"]);
-            $("#eliminar").modal("show");
-          }
-        )
-      });
-      
-      
+          });
+        },
+        agregarPrecios: function(producto){
+          this.productoCompleto.id = producto.id;
+          this.productoCompleto.nombre = producto.nombre;
+          this.productoCompleto.precios = producto.locales;
+          this.nuevoPrecio.producto = producto.id;
+          this.nuevoPrecio.tienda = '';
+          this.nuevoPrecio.precio = '';
+          $("#mdlPrecioProducto").modal("show");
+        },
+        eliminarProducto: function(id){
+          $("#mdlEliminarProducto").modal("hide");
+          url = "producto/" + id;
+          axios.delete(url).then(response => {
+            this.productoCompleto.id = '';
+            this.productoCompleto.nombre = '';
+            this.obtenerProductos();
+            toastr.info(response.data);
+          })
+        },
+        advertencia: function(producto){
+          this.productoCompleto.id = producto.id;
+          this.productoCompleto.nombre = producto.nombre;
+          $("#mdlEliminarProducto").modal("show");
+        },
+        modificarProducto: function(id){
+          $("#mdlEditarProducto").modal("hide");
+          url = "producto/" + id;
+          axios.put(url, this.productoCompleto).then(response => {
+            this.productoCompleto = {
+              id: '',
+              nombre: '',
+              categoria_id: '',
+              categoria_nombre: '',
+              precios: []
+            };
+            this.erroes = [];
+            this.obtenerProductos();
+            toastr.success(response.data);
+          }).catch(errores = {
+            if(response = errores.response){
+              this.errores = response.data.errors;
+              $("#mdlEditarProducto").modal("show");
+            }
+          })
+        },
+        guardarProducto: function(){
+          $("#mdlNuevoProducto").modal("hide");
+          url = "producto";
+          axios.post(url, this.productoNuevo).then(response => {
+            this.productoNuevo = {
+              nombre: '',
+              categoria_id: ''
+            };
+            this.errores = [];
+            this.obtenerProductos();
+            toastr.success(response.data);
+          }).catch(errores => {
+            if(response = errores.response){
+              this.errores = response.data.errors;
+              $("#mdlNuevoProducto").modal("show");
+            }
+          });
+        },
+        obtenerCategorias: function(){
+          url = "../administrador/categoria/todos";
+          axios.get(url).then(response => {
+            this.categorias = response.data;
+          }).catch(errores => {
+            this.obtenerCategorias();
+          });
+        },
+        editarProducto: function(producto){
+          this.productoCompleto.id = producto.id;
+          this.productoCompleto.nombre = producto.nombre;
+          this.productoCompleto.categoria_id = producto.categoria_id;
+          $("#mdlEditarProducto").modal("show");
+        },
+        obtenerProductos: function(){
+          url = "../administrador/producto/todos";
+          axios.get(url).then(response => {
+            this.productos = response.data;
+          }).catch(errores => {
+            this.obtenerProductos();
+          });
+        },
+        mostrarProducto: function(producto){
+          this.productoCompleto.id = producto.id;
+          this.productoCompleto.nombre = producto.nombre;
+          this.productoCompleto.categoria_id = producto.categoria_id;
+          this.productoCompleto.categoria_nombre = producto.categoria.nombre;
+          this.productoCompleto.precios = producto.locales;
+          $("#mdlVerProducto").modal("show");
+        },
+        obtenerTiendas: function(){
+          url = "tienda/todos";
+          axios.get(url).then(response => {
+            this.tiendas = response.data;
+          }).catch(errores => {
+            this.obtenerTiendas();
+          });
+        }
+      }
     });
   </script>
 @stop

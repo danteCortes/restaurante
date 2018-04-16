@@ -13,7 +13,7 @@
         <button type="button" class="btn btn-info btn-xs pull-left" id="btnImprimirTicket" data-id="">
           <span class="fa fa-print"></span> Imprimir</button>
         <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">
-          <span class="fa fa-ban"></span> Cancelar</button>
+          <span class="fa fa-ban"></span> Cerrar</button>
       </div>
     </div>
   </div>
