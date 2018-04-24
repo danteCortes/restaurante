@@ -17,7 +17,11 @@ use Auth;
 class PedidoController extends Controller{
 
   public function inicio(){
-    return view('mozo.pedido.inicio.inicio');
+    if(Auth::user()->tipo_usuario == 2){
+      return view('mozo.pedido.inicio.inicio');
+    }elseif(Auth::user()->tipo_usuario == 1){
+      return view('cajero.pedido.nuevo.inicio');
+    }
   }
 
   public function nuevo(){
@@ -56,24 +60,42 @@ class PedidoController extends Controller{
 
   public function guardar(Request $request){
 
-    $this->validarDatos($request);
-
+    $this->validate($request, [
+      'dni' => 'required|digits:8',
+      'detalles'=>'required',
+      'mesa'=>'nullable|required_without:cliente,llevar',
+      'cliente'=>'nullable|required_without:mesa'
+    ]);
+    $respuesta = [];
     $usuario = Usuario::where('persona_dni', $request->dni)->first();
+    if($request->password){
+      if (!Hash::check($request->password, $usuario->password)) {
+        $mensaje = "EL PASSWORD ES INCORRECTO, PRUEBE NUEVAMENTE";
+        $respuesta = ['errors'=>['password'=>$mensaje], 'message'=>'The given data was invalid.'];
+        return response($respuesta, 422);
+      }
+    }
+    if(empty($usuario->local_id)){
+      $mensaje = "ESTE USUARIO NO ESTÁ REGISTRADO A UNA TIENDA, COMUNIQUE AL ADMINISTRADOR";
+      $respuesta = ['errors'=>['dni'=>$mensaje], 'message'=>'The given data was invalid.'];
+      return response($respuesta, 422);
+    }    
+
     $datosVenta = ['usuario_id'=>$usuario->id, 'local_id'=>$usuario->tienda->id, 'mesa'=>$request->mesa,
       'cliente'=>$request->cliente, 'llevar'=>$request->llevar];
     $venta = VentaTrait::guardar($datosVenta);
 
-    foreach ($request->cantidades as $producto_id => $cantidad) {
-      $localProducto = LocalProducto::where('local_id', $usuario->local_id)->where('producto_id', $producto_id)
+    foreach ($request->detalles as $detalle) {
+      $localProducto = LocalProducto::where('local_id', $usuario->local_id)->where('producto_id', $detalle['id'])
         ->first();
-      $datosDetalleVenta = ['venta_id'=>$venta->id, 'local_producto_id'=>$localProducto->id, 'cantidad'=>$cantidad,
-      'precio_unitario'=>$localProducto->producto->precio];
+      $datosDetalleVenta = ['venta_id'=>$venta->id, 'local_producto_id'=>$localProducto->id, 
+        'cantidad'=>$detalle['cantidad'], 'precio_unitario'=>$localProducto->precio];
       $detalleVenta = DetalleVentaTrait::guardar($datosDetalleVenta);
-      LocalProductoTrait::disminuirProducto($localProducto, $cantidad);
+      LocalProductoTrait::disminuirProducto($localProducto, $detalle['cantidad']);
       $venta = VentaTrait::actualizarTotal($venta, $detalleVenta);
     }
     
-    return redirect('mozo/pedido')->with('correcto', 'EL PEDIDO FUÉ REGISTRADO CON ÉXITO');
+    return response('EL PEDIDO FUÉ REGISTRADO CON ÉXITO', 200);
   }
 
   public function buscarPedidos($dni){
@@ -103,6 +125,21 @@ class PedidoController extends Controller{
     $pedido = Venta::find($request->id);
     $pedido->estado = 2;
     $pedido->update();
+  }
+
+  public function ingresar(Request $request){
+    $this->validate($request, [
+      'dni'=>'required|digits:8|exists:usuarios,persona_dni',
+      'password'=>'required|string'
+    ]);
+    $usuario = Usuario::where('persona_dni', $request->dni)->first();
+    if(Hash::check($request->password, $usuario->password)){
+      if($usuario->local_id){
+        return response(['tienda'=>$usuario->local_id, "mensaje"=>"PUEDE HACER EL PEDIDO."], 200);
+      }
+      return response(["errors"=>["dni"=>"El usuario no tiene asignado un local."]], 422);
+    }
+    return response(["errors"=>["dni"=>"Las credenciales son incorrectas."]], 422);
   }
 
 

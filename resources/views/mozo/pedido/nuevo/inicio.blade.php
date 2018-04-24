@@ -2,12 +2,46 @@
 
 @section('estilos')
   {{Html::style('componentes/bootstrap-select/bootstrap-select.min.css')}}
+  {{Html::style('assets/css/toastr.css')}}
 @stop
 
 @section('contenido')
 @include('plantillas.validaciones')
 @include('plantillas.mensajes')
-<div class="row">
+<div class="row" v-if="!tienda">
+  <div class="col-xs-12 col-md-4">
+    <form class="form-horizontal" @submit.prevent="ingresar">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">Datos de Mozo</h4>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label class="control-label col-sm-4">DNI: </label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control input-sm" placeholder="DNI*" v-model="credenciales.dni"
+                v-mask="'########'">
+              <span class="text-danger" v-for="error in errores.dni">@{{ error }}</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-4">PASSWORD: </label>
+            <div class="col-sm-8">
+              <input type="password" class="form-control input-sm" placeholder="PASSWORD*" 
+                v-model="credenciales.password">
+              <span class="text-danger" v-for="error in errores.password">@{{ error }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel-footer">
+          <button type="submit" class="btn btn-primary btn-sm"><span class="fa fa-key"> 
+            Ingresar</span></button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="row" v-if="tienda">
   {{Form::open(['route'=>'pedido', 'id'=>'frmNuevaVenta', 'autocomplete'=>'off'])}}
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-7">
       <div class="row">
@@ -21,11 +55,8 @@
                 <div class="form-group">
                   {{Form::label(null, 'PRODUCTO*:', ['class'=>'control-label col-xs-3'])}}
                   <div class="col-xs-9">
-                    <select name="producto_id" class="form-control input-sm selectpicker" data-live-search="true"
-                      data-size="5" title="--PRODUCTO--">
-                      @foreach(App\Producto::get() as $producto)
-                        <option value="{{$producto->id}}">{{$producto->nombre}}</option>
-                      @endforeach
+                    <select class="form-control input-sm" v-model="producto">
+                      <option v-for="producto in productos" :value="producto.id">@{{ producto.nombre }}</option>
                     </select>
                   </div>
                 </div>
@@ -128,9 +159,56 @@
 
 @section('scripts')
   {{Html::script('assets/js/vue.js')}}
+  {{Html::script('assets/js/v-mask.min.js')}}
   {{Html::script('assets/js/axios.js')}}
+  {{Html::script('assets/js/toastr.js')}}
   {{Html::script('componentes/bootstrap-select/bootstrap-select.min.js')}}
   <script>
+
+    Vue.use(VueMask.VueMaskPlugin);
+
+    new Vue({
+      el: '#main-container > div.main-content > div > div.page-content',
+      data: {
+        productos: [],
+        producto: {
+          id: '',
+          nombre: '',
+          precio: '',
+        },
+        credenciales: {
+          dni: '',
+          password: ''
+        },
+        tienda: '',
+        errores: []
+      },
+      methods: {
+        obtenerProductos: function(){
+          url = "../producto/todos";
+          axios.get(url).then(response => {
+            this.productos = response.data;
+          }).catch(errores => {
+            this.obtenerProductos();
+          });
+        },
+        ingresar: function(){
+          url = "ingresar";
+          axios.post(url, this.credenciales).then(response => {
+            this.tienda = response.data.tienda;
+            this.credenciales.password = '';
+            this.errores = [];
+            this.obtenerProductos();
+            $("#producto_id").selectpicker('render');
+            toastr.success(response.data.mensaje);console.log("si");
+          }).catch(errores => {
+            if(response = errores.response){
+              this.errores = response.data.errors;
+            }
+          })
+        }
+      }
+    });
 
 
     function eliminarFila(){
