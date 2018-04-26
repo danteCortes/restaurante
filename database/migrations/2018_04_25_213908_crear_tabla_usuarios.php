@@ -12,7 +12,7 @@ class CrearTablaUsuarios extends Migration{
       $table->string('persona_dni', 8);
       $table->foreign('persona_dni')->on('personas')->references('dni')
         ->onUpdate('cascade')->onDelete('cascade');
-      $table->integer('local_id')->unsigned();
+      $table->integer('local_id')->unsigned()->nullable();
       $table->foreign('local_id')->on('locales')->references('id')
         ->onUpdate('cascade')->onDelete('cascade');
       $table->string('password');
