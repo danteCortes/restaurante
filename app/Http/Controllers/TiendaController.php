@@ -29,6 +29,9 @@ class TiendaController extends Controller{
     $tienda->direccion = mb_strtoupper($request->direccion);
     $tienda->telefono = mb_strtoupper($request->telefono);
     $tienda->serie = mb_strtoupper($request->serie);
+    if($request->numeracion){
+      $tienda->numeracion = $request->numeracion;
+    }
     $tienda->ticketera = mb_strtoupper($request->ticketera);
     $tienda->autorizacion = mb_strtoupper($request->autorizacion);
     $tienda->save();
@@ -63,6 +66,9 @@ class TiendaController extends Controller{
     $tienda->direccion = mb_strtoupper($request->direccion);
     $tienda->telefono = mb_strtoupper($request->telefono);
     $tienda->serie = mb_strtoupper($request->serie);
+    if($request->numeracion){
+      $tienda->numeracion = $request->numeracion;
+    }
     $tienda->ticketera = mb_strtoupper($request->ticketera);
     $tienda->autorizacion = mb_strtoupper($request->autorizacion);
     $tienda->save();

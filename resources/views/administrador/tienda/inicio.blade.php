@@ -54,6 +54,7 @@
             $("td.direccion").html(tienda["direccion"]);
             $("td.telefono").html(tienda["telefono"]);
             $("td.serie").html(tienda["serie"]);
+            $("td.numeracion").html(tienda["numeracion"]);
             $("td.ticketera").html(tienda["ticketera"]);
             $("td.autorizacion").html(tienda["autorizacion"]);
             $("#ver").modal("show");
@@ -71,11 +72,12 @@
             $("input.direccion").val(tienda["direccion"]);
             $("input.telefono").val(tienda["telefono"]);
             $("input.serie").val(tienda["serie"]);
+            $("input.numeracion").val(tienda["numeracion"]);
             $("input.ticketera").val(tienda["ticketera"]);
             $("input.autorizacion").val(tienda["autorizacion"]);
             $("#editar").modal("show");
           }
-        )
+        );
       });
 
       $("a.eliminar").click(function(){

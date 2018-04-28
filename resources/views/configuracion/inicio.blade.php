@@ -110,7 +110,7 @@
 
   <body>
     <div class="container">
-      {{Form::open(['url'=>'primer-usuario', 'class'=>'form-signin', 'id'=>'frmLogin'])}}
+      {{Form::open(['url'=>'primer-usuario', 'class'=>'form-signin', 'id'=>'frmLogin', 'autocomplete'=>'off'])}}
         {{Form::token()}}
         <h2 class="form-signin-heading">Ingrese sus datos</h2>
         {{Form::label(null, 'DNI: ', ['class'=>'sr-only'])}}

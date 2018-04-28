@@ -70,20 +70,6 @@ Route::prefix('cajero')->group(function(){
   });
   Route::get('pedidos', 'PedidoController@todos');
   Route::post('pedido/cobrar', 'PedidoController@cobrar');
-  Route::get('producto/todos', 'ProductoController@todos');
+  Route::get('categoria/{id}/productos', 'CategoriaController@productos');
   Route::get('producto/{id}', 'ProductoController@buscar')->where('id', '[0-9]+');
-});
-
-Route::get('llenar-bd', function(){
-  $locales = App\Tienda::get();
-  foreach ($locales as $local) {
-    foreach(App\Producto::get() as $producto){
-      $local_producto = new App\LocalProducto;
-      $local_producto->local_id = $local->id;
-      $local_producto->producto_id = $producto->id;
-      $local_producto->precio = $producto->precio;
-      $local_producto->save();
-    }
-  }
-  return "listo";
 });

@@ -44,6 +44,11 @@ class CategoriaController extends Controller{
       ' FUE ELIMINADA CON ÉXITO.');
   }
 
+  public function productos($id){
+    $categoria = Categoria::find($id);
+    return $categoria->productos;
+  }
+
 
 
 

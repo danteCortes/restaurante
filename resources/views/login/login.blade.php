@@ -134,7 +134,7 @@
           @endif
         </div>
       </div>
-      {{Form::open(['url'=>'login', 'class'=>'form-signin', 'id'=>'frmLogin'])}}
+      {{Form::open(['url'=>'login', 'class'=>'form-signin', 'id'=>'frmLogin', 'autocomplete'=>'off'])}}
 				{{Form::token()}}
 				<div style="text-align:center;">
 					<img src="{{url('img/logo.jpg')}}" alt="" style="width:150px; margin-left:auto; margin-right:auto; display:block; " class="img-responsive img-rounded">

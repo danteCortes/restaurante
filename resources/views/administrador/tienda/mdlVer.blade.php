@@ -28,6 +28,10 @@
             <td class="serie"></td>
           </tr>
           <tr>
+            <th>NUMERACIÓN TICKETS</th>
+            <td class="numeracion"></td>
+          </tr>
+          <tr>
             <th>SERIE TICKETERA</th>
             <td class="ticketera"></td>
           </tr>

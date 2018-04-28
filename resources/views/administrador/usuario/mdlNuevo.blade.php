@@ -5,7 +5,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">Nuevo Usuario</h4>
       </div>
-      {{Form::open(['route'=>'usuario', 'class'=>'form-horizontal'])}}
+      {{Form::open(['route'=>'usuario', 'class'=>'form-horizontal', 'autocomplete'=>'off'])}}
         {{ csrf_field() }}
         <div class="modal-body">
           <div class="form-group">

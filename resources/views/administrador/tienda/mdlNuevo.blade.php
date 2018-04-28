@@ -5,7 +5,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">Nuevo Local</h4>
       </div>
-      {{Form::open(['route'=>'local', 'class'=>'form-horizontal'])}}
+      {{Form::open(['route'=>'local', 'class'=>'form-horizontal', 'autocomplete'=>'off'])}}
         {{ csrf_field() }}
         <div class="modal-body">
           <div class="form-group">
@@ -41,6 +41,13 @@
             <div class="col-sm-8">
               {{Form::text('serie', null, ['class'=>'form-control input-sm mayuscula', 'placeholder'=>'SERIE TICKETS',
                 'id'=>'serie', 'required'=>''])}}
+            </div>
+          </div>
+          <div class="form-group">
+            {{Form::label('numeracion', 'NUMERACIÓN TICKETS', ['class'=>'control-label col-sm-4'])}}
+            <div class="col-sm-8">
+              {{Form::text('numeracion', null, ['class'=>'form-control input-sm numero', 
+                'placeholder'=>'NUMERACIÓN TICKETS', 'id'=>'numeracion'])}}
             </div>
           </div>
           <div class="form-group">

@@ -10,7 +10,7 @@
 @include('plantillas.validaciones')
 @include('plantillas.mensajes')
 <div class="row">
-  {{Form::open(['id'=>'frmNuevaVenta', '@submit.prevent'=>'guardarPedido'])}}
+  {{Form::open(['id'=>'frmNuevaVenta', '@submit.prevent'=>'guardarPedido', 'autocomplete'=>'off'])}}
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-7">
       <div class="row">
         <div class="col-xs-12">
@@ -21,14 +21,25 @@
             <div class="panel-body">
               <div class="form-horizontal">
                 <div class="form-group">
+                  {{Form::label(null, 'CATEGORÍA: ', ['class'=>'control-label col-xs-3'])}}
+                  <div class="col-xs-9">
+                    <select name="categoria" class="form-control input-sm" @change="buscarProductos"
+                      v-model="categoria">
+                      <option value>--CATEGORIA*--</option>
+                      @foreach (App\Categoria::all() as $categoria)
+                        <option value="{{$categoria->id}}">{{$categoria->nombre}}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
                   {{Form::label(null, 'PRODUCTO*:', ['class'=>'control-label col-xs-3'])}}
                   <div class="col-xs-9">
-                    <b-form-select :select-size="3" v-model="producto" :value="producto" class="mb-3" @change="buscarPrecio">
-                      <template slot="first">
-                        <option :value="null" disabled>--PRODUCTO--</option>
-                      </template>
+                    <select name="producto" class="form-control input-sm" @change="buscarPrecio">
+                      <option value v-if="productos.length != 0">--PRODUCTO*--</option>
+                      <option value v-else>--ESCOJA UNA CATEGORÍA--</option>
                       <option v-for="producto in productos" :value="producto.id">@{{ producto.nombre }}</option>
-                    </b-form-select>
+                    </select>
                     <span class="text-danger" v-for="error in errores.detalles">@{{ error }}</span>
                     <span class="text-danger" v-for="error in errores.password">@{{ error }}</span>
                     <span class="text-danger" v-for="error in errores.dni">@{{ error }}</span>
@@ -152,114 +163,5 @@
   {{Html::script('assets/js/axios.js')}}
   {{Html::script('assets/js/v-mask.min.js')}}
   {{Html::script('assets/js/toastr.js')}}
-  <script>
-
-    Vue.use(VueMask.VueMaskPlugin);
-
-    new Vue({
-      el: "#main-container > div.main-content > div > div.page-content",
-      data: {
-        tienda: {{Auth::user()->local_id}},
-        dni: {{Auth::user()->persona_dni}},
-        productos: [],
-        producto: null,
-        productoCompleto: {
-          id: '',
-          nombre: '',
-          precio: '',
-          cantidad: 1,
-          total: 0
-        },
-        detalles: [],
-        precios: '',
-        mesa: '',
-        cliente: '',
-        llevar: '',
-        errores: []
-      },
-      created: function(){
-        this.obtenerProductos();
-      },
-      methods: {
-        guardarPedido: function(){
-          url = "pedido";
-          axios.post(url, {
-            detalles: this.detalles,
-            mesa: this.mesa,
-            cliente: this.cliente,
-            llevar: this.llevar,
-            dni: this.dni
-          }).then(response => {
-            this.cliente = '';
-            this.mesa = '';
-            this.llevar = '';
-            this.detalles = [];
-            this.errores = [];
-            toastr.success(response.data);
-          }).catch(errores => {
-            if(response = errores.response){
-              this.errores = response.data.errors;
-            }
-          });
-        },
-        calcularTotal: function(){
-          var total = 0;
-          $.each(this.detalles, function (clave, detalle) { 
-            total += parseFloat(detalle.cantidad * detalle.precio);console.log(this.total);
-          });
-          return parseFloat(total).toFixed(2);
-        },
-        eliminarDetalle: function(detalle){
-          var indice = this.detalles.indexOf(detalle);
-          this.detalles.splice(indice, 1);
-          this.calcularTotal();
-        },
-        agregarDetalle: function(){
-          this.detalles.push(this.productoCompleto);
-          this.productoCompleto = {
-            id: '',
-            nombre: '',
-            precio: '',
-            cantidad: 1,
-            total: 0
-          };
-          this.producto = null;
-          this.precios = '';
-          this.calcularTotal();
-        },
-        obtenerPrecio: function(tienda){
-          resp = '';
-          $.each(this.precios, function (clave, precio) {
-            if(precio.local_id == tienda){
-              resp = parseFloat(precio.precio).toFixed(2);
-              return false;
-            }
-          });
-          this.productoCompleto.precio = resp;
-          this.productoCompleto.total = 0;
-          return resp;
-        },
-        buscarPrecio: function(event){
-          url = "producto/" + event;
-          axios.get(url).then(response => {
-            this.productoCompleto.id = response.data.id;
-            this.productoCompleto.nombre = response.data.nombre;
-            this.productoCompleto.precio = 0.00;
-            this.productoCompleto.cantidad = 1;
-            this.productoCompleto.total = 0;
-            this.precios = response.data.local_producto;
-          });
-        },
-        obtenerProductos: function(){
-          url = "producto/todos";
-          axios.get(url).then(response => {
-            this.productos = response.data;
-          }).catch(errores => {
-            this.obtenerProductos();
-          });
-        }
-      }
-    });
-    
-  </script>
+  @include('cajero.pedido.nuevo.scripts')
 @stop

@@ -14,7 +14,7 @@ class CrearTablaLocales extends Migration{
       $table->string('direccion', 45);
       $table->string('telefono', 45)->nullable();
       $table->string('serie', 4);
-      $table->string('numeracion')->nullable();
+      $table->string('numeracion')->default(1);
       $table->string('ticketera')->nullable();
       $table->string('autorizacion')->nullable();
     });

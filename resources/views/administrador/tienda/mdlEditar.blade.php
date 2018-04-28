@@ -44,6 +44,13 @@
             </div>
           </div>
           <div class="form-group">
+            {{Form::label('numeracion', 'NUMERACIÓN TICKETS', ['class'=>'control-label col-sm-4'])}}
+            <div class="col-sm-8">
+              {{Form::text('numeracion', null, ['class'=>'form-control input-sm numero numeracion', 
+                'placeholder'=>'NUMERACIÓN TICKETS'])}}
+            </div>
+          </div>
+          <div class="form-group">
             {{Form::label('ticketera', 'SERIE TICKETERA', ['class'=>'control-label col-sm-4'])}}
             <div class="col-sm-8">
               {{Form::text('ticketera', null, ['class'=>'form-control input-sm mayuscula ticketera', 

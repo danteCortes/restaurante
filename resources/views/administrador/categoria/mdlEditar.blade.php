@@ -5,7 +5,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">Editar Categoria</h4>
       </div>
-      {{Form::open(['id'=>'frmEditarCategoria', 'class'=>'form-horizontal', 'method'=>'put'])}}
+      {{Form::open(['id'=>'frmEditarCategoria', 'class'=>'form-horizontal', 'method'=>'put', 'autocomplete'=>'off'])}}
         {{ csrf_field() }}
         <div class="modal-body">
           <div class="form-group">
