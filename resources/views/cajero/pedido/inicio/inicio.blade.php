@@ -40,6 +40,7 @@
 
 @section('scripts')
   {{Html::script('componentes/printarea/jquery.printarea.js')}}
+  {{Html::script('assets/js/moment.min.js')}}
   {{Html::script('assets/js/vue.js')}}
   {{Html::script('assets/js/axios.js')}}
   <script>
@@ -85,48 +86,61 @@
       $("#pedido").modal("hide");
       $.get("{{url('cajero/pedido')}}/"+id,
         function (pedido, textStatus, jqXHR) {
-          numero = pedido['id'];
+          numero = pedido['numeracion'] + "";
           detalles = "";
-          while (numero.lenght < 8) {
+          while (numero.length < 8) {
             numero = "0"+numero;
           }
           $.each(pedido['detalles_venta'], function (clave, detalle) { 
             detalles += `<tr>
-              <td class="text-center" style="border-top-width: 0px;">${detalle['cantidad']}</td>
-              <td class="text-left" style="border-top-width: 0px;">${detalle['local_producto']['producto']['nombre']}</td>
-              <td class="text-right" style="border-top-width: 0px;">${parseFloat(detalle['precio_venta']).toFixed(2)}</td>
+              <td class="text-center" style="border-top-width: 0px; padding: 0px;">${detalle['cantidad']}</td>
+              <td class="text-left" style="border-top-width: 0px; padding: 0px;">${detalle['local_producto']['producto']['nombre']}</td>
+              <td class="text-right" style="border-top-width: 0px; padding: 0px;">${parseFloat(detalle['precio_venta']).toFixed(2)}</td>
             </tr>`;
           });
-          $("#ticket").find("div.modal-body").html(`<table class="table table-responsive ticket">
-            <tr>
-              <th class="text-center" colspan="3" style="border-top-width: 0px;">${pedido['tienda']['nombre']}</th>
-            </tr>
-            <tr>
-              <th class="text-center" colspan="3" style="border-top-width: 0px;">RUC ${pedido['tienda']['ruc']}</th>
-            </tr>
-            <tr>
-              <th class="text-center" colspan="3" style="border-top-width: 0px;">${pedido['tienda']['direccion']}</th>
-            </tr>
-            <tr>
-              <th class="text-center" colspan="3" style="border-top-width: 0px;">Nro Ticketera ${pedido['tienda']['ticketera']}</th>
-            </tr>
-            <tr>
-              <th class="text-left" colspan="3" style="border-top-width: 0px;">Ticket: ${pedido['tienda']['serie']}-${numero}</th>
-            </tr>
-            <tr>
-              <th class="text-left" colspan="3" style="border-top-width: 0px;">Sr(a): ${pedido['cliente']}</th>
-            </tr>
-            <tr>
-              <th class="text-center" style="border-top-width: 0px;">Cant.</th>
-              <th class="text-center" style="border-top-width: 0px;">Descripción</th>
-              <th class="text-center" style="border-top-width: 0px;">Precio</th>
-            </tr>
-            ${detalles}
-            <tr>
-              <th colspan="2" class="text-right" style="border-top-width: 0px;">TOTAL</th>
-              <th class="text-right" style="border-top-width: 0px;">${parseFloat(pedido['total']).toFixed(2)}</th>
-            </tr>
-          </table>`);
+          $("#ticket").find("div.modal-body").html(`<h4 class="text-center">Pollería Chicken's Mafer</h4>
+            <table class="table table-responsive ticket" style="margin: 0px;">
+              <tr>
+                <th class="text-center" colspan="3" style="border-top-width: 0px; padding: 0px;">LOCAL ${pedido['tienda']['nombre']}</th>
+              </tr>
+              <tr>
+                <th class="text-center" colspan="3" style="border-top-width: 0px; padding: 0px;">RUC ${pedido['tienda']['ruc']}</th>
+              </tr>
+              <tr>
+                <th class="text-center" colspan="3" style="border-top-width: 0px; padding: 0px;">DIRECCIÓN ${pedido['tienda']['direccion']}</th>
+              </tr>
+              <tr>
+                <th class="text-center" colspan="3" style="border-top-width: 0px; padding: 0px;">SERIE TICKETERA ${pedido['tienda']['ticketera']}</th>
+              </tr>
+            </table>
+            <hr style="margin: 0px; border: 1px dashed">
+            <table class="table table-responsive ticket" style="margin: 0px;">
+              <tr>
+                <th class="text-left" colspan="3" style="border-top-width: 0px; padding: 0px;">Ticket: ${pedido['serie']}-${numero}</th>
+              </tr>
+              <tr>
+                <th class="text-left" colspan="3" style="border-top-width: 0px; padding: 0px;">Fecha y Hora: ${moment(pedido['fecha']).format('DD/MM/YYYY HH:mm A')}</th>
+              </tr>
+              <tr>
+                <th class="text-left" colspan="3" style="border-top-width: 0px; padding: 0px;">Cliente: ${pedido['cliente']}</th>
+              </tr>
+            </table>
+            <hr style="margin: 0px; border: 1px dashed">
+            <table class="table table-responsive table-condensed" style="margin: 0px;">
+              <tr>
+                <th class="text-center" style="border-top-width: 0px;">Cant.</th>
+                <th class="text-center" style="border-top-width: 0px;">Descripción</th>
+                <th class="text-center" style="border-top-width: 0px;">Precio</th>
+              </tr>
+              ${detalles}
+              <tr>
+                <th colspan="2" class="text-right" style="border-top-width: 1px; solid">TOTAL</th>
+                <th class="text-right" style="border-top-width: 1px; solid">${parseFloat(pedido['total']).toFixed(2)}</th>
+              </tr>
+          </table>
+          <p style="margin-bottom: 0px;">Atendido por ${pedido['usuario']['persona']['nombres']} ${pedido['usuario']['persona']['apellidos']}, Gracias por su preferencia.</p>
+          <p style="margin-bottom: 0px;">Bienes y/o servicios consumidos en la amazonía libre de impuestos.</p>
+          <p style="margin-bottom: 0px;">Autorización SUNAT: ${pedido['tienda']['autorizacion']}</p>`);
           $("#btnImprimirTicket").attr('data-id', pedido['id']);
           $("#ticket").modal("show");
         }
@@ -147,7 +161,6 @@
             $("#ticket").modal("hide");
           }
         );
-        console.log("borrar pedido");
       })
     });
   </script>
