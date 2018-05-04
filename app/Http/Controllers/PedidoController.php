@@ -94,10 +94,6 @@ class PedidoController extends Controller{
       LocalProductoTrait::disminuirProducto($localProducto, $detalle['cantidad']);
       $venta = VentaTrait::actualizarTotal($venta, $detalleVenta);
     }
-
-    $local = $usuario->local;
-    $local->numeracion++;
-    $local->save();
     
     return response('EL PEDIDO FUÉ REGISTRADO CON ÉXITO', 200);
   }
@@ -128,7 +124,7 @@ class PedidoController extends Controller{
   public function cobrar(Request $request){
     $pedido = Venta::find($request->id);
     $pedido->estado = 2;
-    $pedido->update();
+    $pedido->save();
   }
 
   public function ingresar(Request $request){
