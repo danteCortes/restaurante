@@ -3,40 +3,50 @@
 @section('contenido')
   <div class="row">
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
-      <table class="table table-bordered table-condensed table-hover table-striped">
-        <thead>
-          <tr class="info">
-            <th colspan="3">Cierre de Caja {{Carbon\Carbon::now()->format('d/m/Y')}}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th colspan="2">TOTAL DEL DÍA</th>
-            <td class="text-right">@{{ parseFloat(total_ventas).toFixed(2) }}</td>
-          </tr>
-          <tr class="info">
-            <th colspan="3">Resumen de Tickets</th>
-          </tr>
-          <tr v-for="venta in ventas">
-            <th colspan="2" class="text-left">N° @{{venta.serie}}-@{{venta.numeracion}}</th>
-            <td class="text-right">@{{parseFloat(venta.total).toFixed(2)}}</td>
-            <!-- <td v-for="detalle in detalles_venta(venta)">@{{detalles_venta(venta)}}</td> -->
-            <!-- <tr v-for="detalle in detalles_venta(venta)">
-              <td class="text-center">@{{detalle.cantidad}}</td>
-              <td class="text-center">@{{detalle.cantidad}}</td>
-              <td class="text-center">@{{detalle.cantidad}}</td>
-            </tr> -->
-          </tr>
-          <tr>
-            <th class="warning" colspan="3">Ventas por productos</th>
-          </tr>
-          <tr v-for="producto in productos">
-            <td>@{{ producto.cantidad }}</td>
-            <td>@{{ producto.producto }}</td>
-            <td class="text-right">@{{ parseFloat(producto.total).toFixed(2) }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div id="cierre">
+        <table class="table table-bordered table-condensed table-hover table-striped">
+          <thead>
+            <tr class="info">
+              <th class="text-center" colspan="3">CIERRE DE CAJA {{Carbon\Carbon::now()->format('d/m/Y')}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th colspan="2">TOTAL DEL DÍA</th>
+              <td class="text-right">@{{ parseFloat(total_ventas).toFixed(2) }}</td>
+            </tr>
+            <tr class="info">
+              <th colspan="3">Resumen de Tickets</th>
+            </tr>
+            <tr v-for="venta in ventas">
+              <td colspan="3">
+                <table class="table table-bordered table-condensed table-hover table-striped">
+                  <tr class="warning">
+                    <th colspan="2" class="text-left">N° @{{venta.serie}}-@{{venta.numeracion}}</th>
+                    <td class="text-right">@{{parseFloat(venta.total).toFixed(2)}}</td>
+                  </tr>
+                  <tr v-for="detalle in venta.detalles_venta">
+                    <td class="text-center">@{{detalle.cantidad}}</td>
+                    <td>@{{detalle.local_producto.producto.nombre}}</td>
+                    <td class="text-right">@{{parseFloat(detalle.precio_venta).toFixed(2)}}</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <th class="warning" colspan="3">Ventas por productos</th>
+            </tr>
+            <tr v-for="producto in productos">
+              <td>@{{ producto.cantidad }}</td>
+              <td>@{{ producto.producto }}</td>
+              <td class="text-right">@{{ parseFloat(producto.total).toFixed(2) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="btn btn-primary btn-sm" @click.prevent="imprimirCierre">
+        <span class="fa fa-print"> Imprimir</span>
+      </button>
     </div>
   </div>
 @stop
@@ -58,8 +68,8 @@
         this.obtenerCierre();
       },
       methods: {
-        detalles_venta: function(venta){
-          return venta.detalles_venta;
+        imprimirCierre: function(venta){
+          $("#cierre").printArea();
         },
         obtenerCierre: function(){
           url = "{{url('cajero/cierre/obtener-cierre')}}";

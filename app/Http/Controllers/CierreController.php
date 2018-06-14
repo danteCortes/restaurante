@@ -13,7 +13,7 @@ class CierreController extends Controller{
   public function obtenerCierre(){
     $ventas = Venta::whereDate('fecha', Carbon::now()->format('Y-m-d'))
       ->where('usuario_id', Auth::user()->id)
-      ->with(['detallesVenta'])->get();
+      ->with(['detallesVenta.localProducto.producto'])->get();
     
     $total_ventas = DB::table('ventas')->whereDate('fecha', Carbon::now()->format('Y-m-d'))
       ->where('usuario_id', Auth::user()->id)
