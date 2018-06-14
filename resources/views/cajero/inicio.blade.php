@@ -16,9 +16,9 @@
     <b class="arrow"></b>
   </li>
   <li class="">
-    <a href="#">
+    <a href="{{url('cajero/cierre')}}">
       <i class="menu-icon fa fa-ban"></i>
-      <span class="menu-text"> Terminar </span>
+      <span class="menu-text"> Cierre de Caja </span>
     </a>
     <b class="arrow"></b>
   </li>

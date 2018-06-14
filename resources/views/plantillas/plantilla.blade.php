@@ -33,6 +33,11 @@
       .mayuscula{
         text-transform: uppercase;
       }
+      .textocargando{
+        font-size: 92px;
+        font-weight: bold;
+        color: blue;
+      }
     </style>
 
     @yield('estilos')
@@ -45,6 +50,21 @@
 
     <!-- ace settings handler -->
     <script src="{{url('assets/js/ace-extra.min.js')}}"></script>
+    {{Html::style('assets/css/busy-load-spinner.min.css')}}
+    {{Html::script('componentes/jquery-1.12.4/jquery.min.js')}}
+    {{Html::script('assets/js/busy-load-spinner.min.js')}}
+    <script>
+      $("html").busyLoad("show", {
+        maxSize: "150px",
+        minSize: "150px",
+        image: "{{url('img/comida.gif')}}",
+        background: "#f9f9f9",
+        text: "Chicken's Mafer...",
+        textPosition: "bottom",
+        fontSize: "50px",
+        textClass: "textocargando"
+      });
+    </script>
 
     <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
 
@@ -54,7 +74,7 @@
     <![endif]-->
   </head>
 
-  <body class="no-skin">
+  <body class="no-skin" onload="pagina_cargada()">
     <div id="navbar" class="navbar navbar-default ace-save-state">
       <div class="navbar-container ace-save-state" id="navbar-container">
         <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
@@ -454,11 +474,6 @@
 
     <!-- basic scripts -->
 
-    <!--[if !IE]> -->
-    <script src="{{url('assets/js/jquery-2.1.4.min.js')}}"></script>
-
-    <!-- <![endif]-->
-
     <!--[if IE]>
 <script src="assets/js/jquery-1.11.3.min.js"></script>
 <![endif]-->
@@ -475,6 +490,9 @@
     <script src="{{url('componentes/jquery-mask-1.14.11/jquery.mask.js')}}"></script>
 
     <script>
+      function pagina_cargada(){
+        $("html").busyLoad("hide");
+      }
       $(document).ready(function(){
         $(".ruc").mask("99999999999");
         $(".dni").mask("99999999");

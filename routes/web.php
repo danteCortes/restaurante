@@ -72,4 +72,8 @@ Route::prefix('cajero')->group(function(){
   Route::post('pedido/cobrar', 'PedidoController@cobrar');
   Route::get('categoria/{id}/productos', 'CategoriaController@productos');
   Route::get('producto/{id}', 'ProductoController@buscar')->where('id', '[0-9]+');
+  Route::prefix('cierre')->group(function(){
+    Route::get('/', 'CierreController@inicio');
+    Route::get('/obtener-cierre', 'CierreController@obtenerCierre');
+  });
 });
