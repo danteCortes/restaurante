@@ -31,11 +31,12 @@
 
 @section('contenido')
   <div class="row" id="pedidos">
-    
+    <pedido-component v-for="pedido in pedidos" :key="pedido.id" :pedido="pedido"
+      v-on:ver-pedido="cobrarPedido"></pedido-component>
+    @include('cajero.pedido.inicio.mdlTicket')
   </div>
   @include('plantillas.mdlError')
   @include('cajero.pedido.inicio.mdlPedido')
-  @include('cajero.pedido.inicio.mdlTicket')
 @endsection
 
 @section('scripts')
@@ -45,123 +46,124 @@
   {{Html::script('assets/js/axios.js')}}
   <script>
 
-    function pedidos(){
-      $.get("{{url('cajero/pedidos')}}",
-        function (pedidos, textStatus, jqXHR) {
-          $.each(pedidos, function (clave, pedido) { 
-            var estado = "";
-            if (pedido['estado'] == 0) {
-              estado = "Pedido";
-              alerta = "btn-warning";
-            }else if(pedido['estado']){
-              estado = "Servido";
-              alerta = "btn-success";
+    Vue.component('pedido-component', {
+      props: ['pedido'],
+      methods: {
+        numero: function(){
+          return "0000987";
+        },
+        estado: function(estado){
+          if(estado == 0){
+            return "Pedido";
+          }else{
+            return "Servido";
+          }
+        },
+        llevar: function(llevar, mesa){
+          if(llevar == 1){
+            return "para llevar";
+          }else{
+            return "Mesa: " + mesa;
+          }
+        }
+      },
+      template: `<div class="col-xs-6 col-sm-4 col-md-4 col-lg-3">
+        <div class="panel panel-default">
+            <span class="mesa" v-text="llevar(pedido.llevar, pedido.mesa)"></span>
+          <button class="btn btn-block btn-warning"type="button"
+            @click="$emit('ver-pedido', pedido.id)">
+            <div class="panel-body">
+              <p> Cliente: @{{pedido.cliente}}</p>
+              <p><strong> Total: S/ @{{parseFloat(pedido.total).toFixed(2)}} </strong></p>
+              <p><strong> Estado: @{{estado(pedido.estado)}} </strong></p>
+              <p> Mozo: @{{ pedido.usuario.persona.nombres }} </p>  
+            </div>
+          </button> 
+        </div>
+      </div>`
+    });
+
+    const app = new Vue({
+      el: "#pedidos",
+      data: {
+        pedidos: [],
+        pedidoCompleto: {
+          id: '',
+          tienda_ruc: '',
+          tienda_nombre: '',
+          tienda_direccion: '',
+          tienda_ticketera: '',
+          tienda_autorizacion: '',
+          numeracion: '',
+          fecha: '',
+          cliente: '',
+          total: '',
+          usuario: '',
+          detalles: []
+        }
+      },
+      created() {
+        this.buscarPedidos();
+      },
+      methods: {
+        imprimirTicket: function(pedido_id){
+          $("#papel-ticket").printArea();
+          $("#ticket").modal("hide");
+          axios.post('cajero/pedido/cobrar', {id: pedido_id})
+            .then((response) => {
+              this.pedidoCompleto = {
+                id: '',
+                tienda_ruc: '',
+                tienda_nombre: '',
+                tienda_direccion: '',
+                tienda_ticketera: '',
+                tienda_autorizacion: '',
+                numeracion: '',
+                fecha: '',
+                cliente: '',
+                total: '',
+                usuario: '',
+                detalles: []
+              };
+              this.buscarPedidos();
+            });
+        },
+        cobrarPedido: function(id){
+          axios.get('cajero/pedido/' + id).then((response) => {
+            pedido = response.data;
+            this.pedidoCompleto.id = pedido.id;
+            this.pedidoCompleto.tienda_ruc = pedido.tienda.ruc;
+            this.pedidoCompleto.tienda_nombre = pedido.tienda.nombre;
+            this.pedidoCompleto.tienda_direccion = pedido.tienda.direccion;
+            this.pedidoCompleto.tienda_ticketera = pedido.tienda.ticketera;
+            this.pedidoCompleto.tienda_autorizacion = pedido.tienda.autorizacion;
+            num = pedido.numeracion + "";
+            while (num.length < 8) {
+              num = "0"+num;
             }
-            if (pedido['llevar'] == 1) {
-              llevar = "Para Llevar";
-            }else{
-              llevar = "Mesa: "+pedido['mesa'];
-            }
-            caja = `<div class="col-xs-6 col-sm-4 col-md-4 col-lg-3">
-              <div class="panel panel-default">
-                  <span class="mesa">${llevar}</span>
-                <button class="btn btn-block ${alerta}" type="button"
-                  onclick="cobrarPedido(${pedido['id']})">
-                  <div class="panel-body">
-                    <p> Cliente: ${pedido['cliente']} </p>
-                    <p><strong> Total: S/ ${parseFloat(pedido['total']).toFixed(2)} </strong></p>
-                    <p><strong> Estado: ${estado} </strong></p>
-                    <p> Mozo: ${pedido['usuario']['persona']['nombres']} </p>  
-                  </div>
-                </button> 
-              </div>
-            </div>`;
-            $("#pedidos").append(caja);
+            console.log(pedido.numeracion.length);
+            this.pedidoCompleto.numeracion = pedido.serie + '-' + num;
+            this.pedidoCompleto.fecha = moment(pedido.fecha).format('DD/MM/YYYY HH:mm A');
+            this.pedidoCompleto.cliente = pedido.cliente;
+            this.pedidoCompleto.total = pedido.total;
+            this.pedidoCompleto.usuario = pedido.usuario.persona.nombres + ' ' +
+              pedido.usuario.persona.apellidos;
+            this.pedidoCompleto.detalles = pedido.detalles_venta;
+            $("#ticket").modal("show");
+          });
+        },
+        formatoFecha(fecha){
+          return moment(fecha).format('DD/MM/YYYY HH:mm A');
+        },
+        numero: function(){
+          return "09845";
+        },
+        buscarPedidos: function(){
+          axios.get('cajero/pedidos').then( (response) => {
+            this.pedidos = response.data;
           });
         }
-      );
-    }
-
-    function cobrarPedido(id){
-      $("#pedido").modal("hide");
-      $.get("{{url('cajero/pedido')}}/"+id,
-        function (pedido, textStatus, jqXHR) {
-          numero = pedido['numeracion'] + "";
-          detalles = "";
-          while (numero.length < 8) {
-            numero = "0"+numero;
-          }
-          $.each(pedido['detalles_venta'], function (clave, detalle) { 
-            detalles += `<tr>
-              <td class="text-center" style="border-top-width: 0px; padding: 0px;">${detalle['cantidad']}</td>
-              <td class="text-left" style="border-top-width: 0px; padding: 0px;">${detalle['local_producto']['producto']['nombre']}</td>
-              <td class="text-right" style="border-top-width: 0px; padding: 0px;">${parseFloat(detalle['precio_venta']).toFixed(2)}</td>
-            </tr>`;
-          });
-          $("#ticket").find("div.modal-body").html(`<h4 class="text-center">Pollería Chicken's Mafer</h4>
-            <table class="table table-responsive ticket" style="margin: 0px;">
-              <tr>
-                <th class="text-center" colspan="3" style="border-top-width: 0px; padding: 0px;">LOCAL ${pedido['tienda']['nombre']}</th>
-              </tr>
-              <tr>
-                <th class="text-center" colspan="3" style="border-top-width: 0px; padding: 0px;">RUC ${pedido['tienda']['ruc']}</th>
-              </tr>
-              <tr>
-                <th class="text-center" colspan="3" style="border-top-width: 0px; padding: 0px;">DIRECCIÓN ${pedido['tienda']['direccion']}</th>
-              </tr>
-              <tr>
-                <th class="text-center" colspan="3" style="border-top-width: 0px; padding: 0px;">SERIE TICKETERA ${pedido['tienda']['ticketera']}</th>
-              </tr>
-            </table>
-            <hr style="margin: 0px; border: 1px dashed">
-            <table class="table table-responsive ticket" style="margin: 0px;">
-              <tr>
-                <th class="text-left" colspan="3" style="border-top-width: 0px; padding: 0px;">Ticket: ${pedido['serie']}-${numero}</th>
-              </tr>
-              <tr>
-                <th class="text-left" colspan="3" style="border-top-width: 0px; padding: 0px;">Fecha y Hora: ${moment(pedido['fecha']).format('DD/MM/YYYY HH:mm A')}</th>
-              </tr>
-              <tr>
-                <th class="text-left" colspan="3" style="border-top-width: 0px; padding: 0px;">Cliente: ${pedido['cliente']}</th>
-              </tr>
-            </table>
-            <hr style="margin: 0px; border: 1px dashed">
-            <table class="table table-responsive table-condensed" style="margin: 0px;">
-              <tr>
-                <th class="text-center" style="border-top-width: 0px;">Cant.</th>
-                <th class="text-center" style="border-top-width: 0px;">Descripción</th>
-                <th class="text-center" style="border-top-width: 0px;">Precio</th>
-              </tr>
-              ${detalles}
-              <tr>
-                <th colspan="2" class="text-right" style="border-top-width: 1px; solid">TOTAL</th>
-                <th class="text-right" style="border-top-width: 1px; solid">${parseFloat(pedido['total']).toFixed(2)}</th>
-              </tr>
-          </table>
-          <p style="margin-bottom: 0px;">Atendido por ${pedido['usuario']['persona']['nombres']} ${pedido['usuario']['persona']['apellidos']}, Gracias por su preferencia.</p>
-          <p style="margin-bottom: 0px;">Bienes y/o servicios consumidos en la amazonía libre de impuestos.</p>
-          <p style="margin-bottom: 0px;">Autorización SUNAT: ${pedido['tienda']['autorizacion']}</p>`);
-          $("#btnImprimirTicket").attr('data-id', pedido['id']);
-          $("#ticket").modal("show");
-        }
-      );
-    }
-
-    $(document).ready(function(){
-      pedidos();
-
-      $("#btnImprimirTicket").click(function(){
-        $("#papel-ticket").printArea();
-        $.post("cajero/pedido/cobrar", {
-            id: $(this).data("id")
-          },
-          function (data, textStatus, jqXHR) {
-            $("#pedidos").empty();
-            pedidos();
-            $("#ticket").modal("hide");
-          }
-        );
-      })
+      }
     });
   </script>
 @endsection
