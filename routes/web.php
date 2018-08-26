@@ -42,6 +42,10 @@ Route::prefix('administrador')->group(function(){
     Route::put('/{id}', 'ProductoController@modificar')->where('id', '[0-9]+');
     Route::delete('/{id}', 'ProductoController@eliminar')->where('id', '[0-9]+');
   });
+  Route::prefix('reporte')->group(function(){
+    Route::get('/', 'ReporteController@inicio');
+    Route::get('buscar-ventas', 'ReporteController@buscarVentas');
+  });
 });
 
 Route::prefix('mozo')->group(function(){

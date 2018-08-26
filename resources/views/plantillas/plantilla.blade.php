@@ -65,13 +65,6 @@
         textClass: "textocargando"
       });
     </script>
-
-    <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
-
-    <!--[if lte IE 8]>
-    <script src="assets/js/html5shiv.min.js"></script>
-    <script src="assets/js/respond.min.js"></script>
-    <![endif]-->
   </head>
 
   <body class="no-skin" onload="pagina_cargada()">
@@ -470,21 +463,12 @@
       <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
         <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
       </a>
-    </div><!-- /.main-container -->
-
-    <!-- basic scripts -->
-
-    <!--[if IE]>
-<script src="assets/js/jquery-1.11.3.min.js"></script>
-<![endif]-->
+    </div>
+    
     <script type="text/javascript">
       if('ontouchstart' in document.documentElement) document.write("<script src='assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
     </script>
     <script src="{{url('assets/js/bootstrap.min.js')}}"></script>
-
-    <!-- page specific plugin scripts -->
-
-    <!-- ace scripts -->
     <script src="{{url('assets/js/ace-elements.min.js')}}"></script>
     <script src="{{url('assets/js/ace.min.js')}}"></script>
     <script src="{{url('componentes/jquery-mask-1.14.11/jquery.mask.js')}}"></script>
@@ -507,7 +491,5 @@
     </script>
 
     @yield('scripts')
-
-    <!-- inline scripts related to this page -->
   </body>
 </html>
